@@ -1,0 +1,8 @@
+
+./gradlew clean  --warning-mode all
+
+./gradlew build --warning-mode all
+
+./gradlew test --scan
+
+./gradlew tasks --all
