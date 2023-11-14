@@ -1,2 +1,2 @@
-rootProject.name = "CS320Classes"
+rootProject.name = "TaskServiceTest"
 
