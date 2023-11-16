@@ -1,6 +1,8 @@
 package org.jeremiahboothe;
 
 import java.util.HashMap;
+
+
 /**
  * Created as a Singleton, TaskService, handles the operations and creation of the map and hashmap. Upon initialization the constructor instantiates the Hashmap.
  */
@@ -84,7 +86,6 @@ public class TaskService {
      * @param taskId Id of Task
      * @return Task
      */
-    
     Task getTaskById(String taskId) {
         return taskMap.get(taskId);
     }

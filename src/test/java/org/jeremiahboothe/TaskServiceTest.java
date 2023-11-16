@@ -5,8 +5,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TaskServiceTest {
     private static TaskService taskService;
+    private TestInfo testInfo;
 
     /**
      * Initializes HashMap and TaskService Singleton for testing.
@@ -16,13 +18,47 @@ class TaskServiceTest {
         taskService = TaskService.getInstance();
     }
 
+
+    @BeforeEach
+    void printSpace(TestInfo testInfo) {
+        this.testInfo = testInfo;
+        System.out.println(testInfo.getDisplayName());
+        System.out.println("=========================================================\n");
+
+    }
+
+
+
+
+    /*========================= Testing for Correct Input =========================*/
+
+
+
+
+
+
+
+    /*========================= Testing for Exceptions =========================*/
+
+
+
+
+
+
+
+
+
+    /*========================= Testing Hashmap Additions - Exceptions, and Entries =========================*/
+
     /**
      * Parameterized test to run null check and length check, ensuring values that are too long or null are rejected.
      * @param taskId CSV Task Id's
      * @param taskName CSV Task Names
      * @param taskDescription CSV Task Descriptions
      */
+    @Order(1)
     @CsvSource({
+            "Isabella,Anderson,4325555678,123 Oak St",
             "Isabella,Anderson,4325555678,123 Oak St",
             ",Smith,4325551234,456 Pine Ln",
             "Sophia,,4325559275,789 Elm Blvd",
@@ -36,20 +72,17 @@ class TaskServiceTest {
     @ParameterizedTest
     @DisplayName("Test Exceptions for Null and Length")
     void testAddTaskAndGetTaskById(String taskId,
-                                         String taskName,
-                                         String taskDescription) {
+                                   String taskName,
+                                   String taskDescription) {
         try {
             taskService.addTask(taskId,
                     taskName,
                     taskDescription);
 
-            System.out.println("\n");
 
-            taskService.displayValues();
-            System.out.println("\n");
-            //Task task = taskService.getTaskById(taskService.getCurrentTaskId());
             assertNotNull(taskService.getTaskById(taskService.getCurrentTaskId()), "The added Task Should not be Null");
-            //assertEquals(task, taskService.getTaskById(taskService.getCurrentTaskId()));
+            taskService.displayValues();
+
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException || e instanceof NullPointerException,
                     "Unexpected exception type: " + e.getClass().getSimpleName());
@@ -57,6 +90,64 @@ class TaskServiceTest {
         }
 
     }
+
+    /**
+     * Tests print allTasks to make sure it's not throwing an error, the tasks currently in the map are printed to console.
+     */
+    @Test
+    @Order(2)
+        void testPrintAllTasks() {
+        assertDoesNotThrow(() -> {
+            taskService.printAllTasks();
+        });
+    }
+
+    @Test
+    void getTaskDescription() {
+        taskService.addTask("1", "Workout", "Pump some Iron like I'm Arnold in 1978");
+        assertEquals(taskService.getTaskDescription(), "Pump some Iron like I'm Arnold in 1978");
+        System.out.println(taskService.getTaskDescription());
+    }
+
+
+
+
+    @Test
+    void testDeleteTask() {
+        assertDoesNotThrow(() -> {
+            taskService.deleteTask("1");
+            assertNull(taskService.getTaskById("1"));
+        });
+
+        NullPointerException thrown = assertThrows(NullPointerException.class, () -> {
+            taskService.deleteTask("1");
+            }, "NullPointerException was expected");
+        assertEquals("Task Id: 1 does not exist", thrown.getMessage());
+        System.out.println(thrown.getMessage());
+    }
+
+
+    /**
+     * Tests retrieval of Task Name of current Task
+     */
+    @Test
+    void getTaskName() {
+        taskService.addTask("399",
+                "Lennry",
+                "333 Happy Place");
+        assertEquals(taskService.getTaskName(), "Lennry");
+    }
+
+    /**
+     * Tests retrieval of Id for current task
+     */
+    @Test
+    void getTaskId() {
+        taskService.addTask("599","Lennry",
+                "333 Happy Place");
+        assertEquals("599", taskService.getTaskId());
+    }
+
 
     /**
      * Tests User Input Id's, and checks to ensure overwrites to not occur after user Input Id is created.
@@ -158,78 +249,4 @@ class TaskServiceTest {
             System.out.println(e.getMessage());
         }
     }*/
-
-    /**
-     * Tests and verifies deleting task and not being able to again delete a task after it has been deleted.
-     *//*
-    @Test
-    void testDeleteTask() {
-        assertDoesNotThrow(() -> {
-            taskService.addTask("1",
-                    "asdf",
-                    "asdfgh",
-                    "340531",
-                    "234345");
-            taskService.deleteTask("1");
-            assertNull(taskService.getTaskById("1"));
-        });
-
-        try {
-            taskService.deleteTask("1");
-
-        } catch (NullPointerException e) {
-            assertTrue(true,
-                    "Unexpected exception type: " + e.getClass().getSimpleName());
-            System.out.println(e.getMessage());
-        }
-    }*/
-
-    /**
-     * Tests print allTasks to make sure it's not throwing an error, the tasks currently in the map are printed to console.
-     */
-    /*
-    @Test
-    void testPrintAllTasks() {
-        assertDoesNotThrow(() -> {
-            taskService.printAllTasks();
-        });
-    }*/
-
-    /**
-     * Tests retrieval of Id for current task
-     *//*
-    @Test
-    void getTaskId() {
-        taskService.addTask("599","Lennry",
-                "Balthazor",
-                "4325559275",
-                "333 Happy Place");
-        assertEquals(taskService.getTaskId(), "599");
-    }*/
-
-    /**
-     * Tests retrieval of Task Name of current Task.
-     *//*
-    @Test
-    void getTaskName() {
-        taskService.addTask("499","Lennry",
-                "Balthazor",
-                "4325559275",
-                "333 Happy Place");
-        assertEquals(taskService.getTaskName(), "Balthazor");
-    }*/
-
-    /**
-     * Tests retrieval of Task Name of current Task
-     *//*
-    @Test
-    void getTaskName() {
-        taskService.addTask("399",
-                "Lennry",
-                "Balthazor",
-                "4325559275",
-                "333 Happy Place");
-        assertEquals(taskService.getTaskName(), "Lennry");
-    }*/
-
 }

@@ -5,9 +5,6 @@ public class Task {
     private String taskName;
     private String taskDescription;
 
-    private final int lengthShort = 10;
-    private final int lengthLong = 30;
-
     /**
      * Constructor for new Task Creation. Constructor is designed to prevent object instantiation upon failed null check or failed length check. Passes errors up the chain to be captured at test level.
      * @param taskId Generated or UserInputId
@@ -19,18 +16,12 @@ public class Task {
     Task(String taskId,
          String taskName,
          String taskDescription)
-            throws NullPointerException,
-            IllegalArgumentException {
+            throws IllegalArgumentException,
+            NullPointerException {
         nullCheck(taskId, "Task Id");
-
-        nullCheck(taskName, "Task Name");
-        nullCheck(taskDescription, "Task Description");
-        lengthCheckTen(taskId, "Task Id");
-        lengthCheckTen(taskName, "Task Name");
-        lengthCheckTen(taskDescription, "Task Description");
+        setTaskName(taskName);
+        setTaskDescription(taskDescription);
         this.taskId = taskId;
-        this.taskName = taskName;
-        this.taskDescription = taskDescription;
     }
     
     /**
@@ -43,6 +34,7 @@ public class Task {
         if (genericValue == null) {
             throw new NullPointerException(errorMessage + " cannot be null!");
         }
+        lengthCheckTen(genericValue, errorMessage);
     }
 
     /**
@@ -53,28 +45,33 @@ public class Task {
      */
     private <T> void lengthCheckTen(T genericValue, String errorMessage) {
         int length = String.valueOf(genericValue).length();
-            if (length > lengthShort) {
-                throw new IllegalArgumentException(errorMessage + " cannot be longer than 10!");
+        int idMaxLength = 10;
+            if (length > idMaxLength) {
+                throw new IllegalArgumentException("Invalid " + errorMessage + ": cannot be longer than 10!");
             }
     }
-     /**
-      * Generic type length check to not exceed 30 and pass IllegalArgumentExceptions back up the chain if the value is greater than 30.
-      * @param genericValue The generic typed value to check for length greater than 30.
-      * @param errorMessage The error message for tracing back to the origin.
-      * @param <T> Generic Type.
-      */
-    private <T> void lengthCheckThirty(T genericValue, String errorMessage) {
-        int length = String.valueOf(genericValue).length();
-        if (length > lengthLong) {
-            throw new IllegalArgumentException(errorMessage + " cannot be longer than 30!");
-        }
-    }
 
+    /**
+     * setter for taskName
+     * @param taskName
+     */
     void setTaskName(String taskName) {
+        int maxLength = 20;
+        if(taskName == null || taskName.length() > 20){
+            throw new IllegalArgumentException("Invalid Task Name, cannot be longer than 20!");
+        }
         this.taskName = taskName;
     }
-    
+
+    /**
+     *
+     * @param taskDescription
+     */
     void setTaskDescription(String taskDescription) {
+        int maxLength = 50;
+        if(taskDescription == null || taskDescription.length() > maxLength) {
+            throw new IllegalArgumentException("Invalid Task Description: cannot be longer than 50!");
+        }
         this.taskDescription = taskDescription;
     }
     
