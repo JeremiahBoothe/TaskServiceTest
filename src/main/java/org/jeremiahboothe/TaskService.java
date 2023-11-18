@@ -25,8 +25,7 @@ public class TaskService {
     }
 
     /**
-     * Adds new Task to list
-     *
+     * Adds new Task to taskMap
      * @param taskId          er Input Id of Task
      * @param taskName        User Input Task Name
      * @param taskDescription User Input Task Description
@@ -63,46 +62,49 @@ public class TaskService {
     }
 
     /**
-     * Retrieves Task by Id
-     * @param taskId Id of Task
-     * @return Task
+     * Retrieves Task by Id.
+     * @param taskId Id of Task.
+     * @return Task at Id taskId.
      */
     public Task getTaskById(String taskId) {
         return taskMap.get(taskId);
     }
 
     /**
-     * Retrieves Task Name of current Task
-     * @return String
+     * Retrieves Task Name of Task
+     * @param taskId Id of Task
+     * @return taskName Name of Task at taskId.
      */
     public String getTaskName(String taskId) {
-        return getTaskById(taskId).getTaskName();
-
+        return taskMap.get(taskId).getTaskName();
     }
 
     /**
-     * Retrieves Task Name of current
-     * @return String
+     * Retrieves Task Description of Task.
+     * @param taskId Id of Task
+     * @return taskDescripton Name of Task Description at taskId.
      */
     public String getTaskDescription(String taskId) {
         return getTaskById(taskId).getTaskDescription();
     }
 
     /**
-     * TODO: Change?
-     * @param task
-     * @param taskName
+     * Updates Task Name in the map, by Id.
+     * @param taskId Task Id to update
+     * @param taskName Task Name to update
      */
-    public void updateTaskName(Task task, String taskName){
+    public void updateTaskName(String taskId, String taskName){
+        Task task = taskMap.get(taskId);
         task.setTaskName(taskName);
     }
 
     /**
-     * TODO: Change?
-     * @param task
-     * @param taskDescription
+     * Updates Task Description in the map, by Id.
+     * @param taskId Task Id to update
+     * @param taskDescription New Task Description
      */
-    public void updateTaskDescription(Task task, String taskDescription){
+    public void updateTaskDescription(String taskId, String taskDescription){
+        Task task = taskMap.get(taskId);
         task.setTaskDescription(taskDescription);
     }
 

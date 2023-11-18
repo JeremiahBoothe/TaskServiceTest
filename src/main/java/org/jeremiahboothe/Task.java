@@ -45,15 +45,15 @@ public class Task {
      */
     private <T> void lengthCheckTen(T genericValue, String errorMessage) {
         int length = String.valueOf(genericValue).length();
-        int idMaxLength = 10;
-            if (length > idMaxLength) {
-                throw new IllegalArgumentException("Invalid " + errorMessage + ": cannot be longer than 10!");
+        int maxLength = 10;
+            if (length > maxLength) {
+                throw new IllegalArgumentException("Invalid " + errorMessage + ": cannot be longer than " + maxLength + "!");
             }
     }
 
     /**
-     * setter for taskName
-     * @param taskName
+     * Setter for taskName
+     * @param taskName Name of Task
      */
     void setTaskName(String taskName) {
         nullCheck(taskName, "Task Name");
@@ -65,8 +65,8 @@ public class Task {
     }
 
     /**
-     *
-     * @param taskDescription
+     * Setter for taskDescription
+     * @param taskDescription Description of Task
      */
     void setTaskDescription(String taskDescription) {
         nullCheck(taskDescription, "Task Description");
@@ -79,7 +79,7 @@ public class Task {
 
      /**
      * Retrieves the Task Id
-     * @return this.TaskId
+     * @return taskId The Task Id of the Task.
      */
     String getTaskId(){
         return this.taskId;
@@ -87,7 +87,7 @@ public class Task {
 
     /**
      * Retrieves the Task Description
-     * @return taskDescription
+     * @return taskDescription The Task Description of the Task.
      */
     String getTaskDescription(){
         return this.taskDescription;
@@ -102,7 +102,7 @@ public class Task {
     }
 
     /**
-     * Prints Task Values
+     * Prints Task Values of current task
      */
     void displayValues() {
         System.out.println("Task Id: " + getTaskId());

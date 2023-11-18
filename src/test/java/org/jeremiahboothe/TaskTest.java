@@ -3,6 +3,7 @@ package org.jeremiahboothe;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TaskTest {
 
     private Task task;
@@ -12,7 +13,7 @@ class TaskTest {
      * @param testInfo - to pull the display name off each test to display.
      */
     @BeforeEach
-    void printSpace(TestInfo testInfo) {
+    void testFormattingPrintBefore(TestInfo testInfo) {
         String displayName = testInfo.getDisplayName();
         int totalLength = 60; // Adjust the total length as needed
         int paddingLength = (totalLength - displayName.length() - 2) / 2;
@@ -25,45 +26,53 @@ class TaskTest {
         System.out.println(padding2);
         System.out.printf("%s %s %s%s\n\n", padding, displayName, padding, extraPaddingStr);
     }
+
     /**
      * sets up initial task to check values against
      */
     @BeforeEach
-    void setUp() {
+    void setUpTestCaseTask() {
         // Set up a new Task object before each test
-        task = new Task("1", "Perform a backflip.", "Try not to knock myself out this time!");
+        task = new Task("1", "Perform a back flip.", "Try not to knock myself out this time!");
     }
 
     /**
      * After test Formatting for viewing pleasure!
      */
     @AfterEach
-    void printAfterSpace() {
+    void testFormattingPrintAfter() {
         int totalLength = 60; // Adjust the total length as needed
         String padding2 = "=".repeat(totalLength);
         System.out.println(padding2 + "\n\n");
     }
 
-
-
-    /*========================= Testing for correct Values =========================*/
-
-
+    /**
+     * Retrieves Name of setUpTestCaseTask
+     */
     @Test
+    @Order(1)
     @DisplayName("Retrieve Task Name:")
     void testGetTaskName() {
-        assertEquals("Perform a backflip.", task.getTaskName());
+        assertEquals("Perform a back flip.", task.getTaskName());
         System.out.println(task.getTaskName());
     }
 
+    /**
+     * Retrieves Description of setUpTestCaseTask
+     */
     @Test
+    @Order(2)
     @DisplayName("Retrieve Task Description:")
     void testGetTaskDescription() {
         assertEquals("Try not to knock myself out this time!", task.getTaskDescription());
         System.out.println(task.getTaskDescription());
     }
 
+    /**
+     * Displays all values of setUpTestCaseTask
+     */
     @Test
+    @Order(3)
     @DisplayName("Display Values of Current Task:")
     void testDisplayValues() {
         // You can redirect System.out to capture the output for testing
@@ -71,32 +80,39 @@ class TaskTest {
         assertDoesNotThrow(() -> task.displayValues());
     }
 
+    /**
+     * Null Failure Check on the Task Constructor
+     */
     @Test
-    @DisplayName("Constructor Null Check:")
+    @Order(4)
+    @DisplayName("Constructor Null Check: ID, Name, Description & Fail:")
     void testConstructorNullCheck() {
         // Test that the constructor throws NullPointerException for null values
         NullPointerException idNull = assertThrows(NullPointerException.class, () -> {
-            new Task(null, "Blah", "Doe");
+            new Task(null, "Some Task", "Stuff to Do");
         }, "Illegal Argument was expected");
         assertEquals("Task Id cannot be null!", idNull.getMessage());
         System.out.println(idNull.getMessage());
 
         NullPointerException nameNull = assertThrows(NullPointerException.class, () -> {
-            new Task("1", null, "Doe");
+            new Task("2", null, "Stuff to Do");
         }, "Illegal Argument was expected");
         assertEquals("Task Name cannot be null!", nameNull.getMessage());
         System.out.println(nameNull.getMessage());
 
         NullPointerException descriptionNull = assertThrows(NullPointerException.class, () -> {
-            new Task("2", "blah", null);
+            new Task("2", "Some Task", null);
         }, "Illegal Argument was expected");
         assertEquals("Task Description cannot be null!", descriptionNull.getMessage());
         System.out.println(descriptionNull.getMessage());
-
     }
 
+    /**
+     * Length Failure Checks on constructor
+     */
     @Test
-    @DisplayName("Constructor Length Check:")
+    @Order(5)
+    @DisplayName("Constructor Length Check: ID, Name, Description & Fail:")
     void testConstructorLengthCheck() {
         // Test that the constructor throws IllegalArgumentException for values exceeding length limits
         IllegalArgumentException idLong = assertThrows(IllegalArgumentException.class, () -> {
@@ -122,20 +138,27 @@ class TaskTest {
      * Starts with a new task, updates the name and checks the update, then updates the description and checks the update.
      */
     @Test
-    @DisplayName("Test Update Task:")
+    @Order(6)
+    @DisplayName("Test Update Task Name then Description:")
     void testUpdateTask() {
-        Task updatedTask = new Task("53354", "9876543210", "456 Second St");
+        String taskId = "53354";
 
-        assertEquals("9876543210", updatedTask.getTaskName());
-        assertEquals("456 Second St", updatedTask.getTaskDescription());
+        Task updatedTask = new Task(taskId, "Too Much Work", "All the live long day");
+
+        assertEquals("Too Much Work", updatedTask.getTaskName());
+        assertEquals("All the live long day", updatedTask.getTaskDescription());
         updatedTask.displayValues();
+        System.out.println("\n");
+
+        updatedTask.setTaskName("UPDATED");
+        assertEquals("UPDATED", updatedTask.getTaskName());
+        updatedTask.displayValues();
+        System.out.println("\n");
 
         updatedTask.setTaskDescription("UPDATED");
-        updatedTask.setTaskName("UPDATED");
-        assertEquals("53354", updatedTask.getTaskId());
-        assertEquals("UPDATED", updatedTask.getTaskName());
         assertEquals("UPDATED", updatedTask.getTaskDescription());
         updatedTask.displayValues();
+        System.out.println("\n");
     }
 
     /*========================= Testing for Exceptions =========================*/
@@ -144,6 +167,7 @@ class TaskTest {
      * Id should be 10 or less.
      */
     @Test
+    @Order(7)
     @DisplayName("Create Task & Task Id Fails: Length and Null:")
     void testCreateTaskIdFails() {
 
@@ -164,6 +188,7 @@ class TaskTest {
      * Name should be 20 or less.
      */
     @Test
+    @Order(8)
     @DisplayName("Create Task & Task Name Fails:")
     void testCreateTaskNameFails() {
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
@@ -177,6 +202,7 @@ class TaskTest {
      * Description should be 50 or less.
      */
     @Test
+    @Order(9)
     @DisplayName("Create Task & Task Description Fails:")
     void testCreateTaskDescriptionFails() {
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {

@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class TaskServiceTest {
+class TaskServiceTest {
     private static TaskService taskService;
 
     /**
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
      * @param testInfo - to pull the display name off each test to display.
      */
     @BeforeEach
-    void printSpace(TestInfo testInfo) {
+    void testFormattingPrintBefore(TestInfo testInfo) {
         String displayName = testInfo.getDisplayName();
         int totalLength = 80; // Adjust the total length as needed
         int paddingLength = (totalLength - displayName.length() - 2) / 2;
@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
      * BeforeEach test formatting, to make it a little bit more enjoyable to read!
      */
     @AfterEach
-    void printAfterSpace() {
+    void testFormattingPrintAfter() {
         int totalLength = 80; // Adjust the total length as needed
         String padding2 = "=".repeat(totalLength);
         System.out.println(padding2 + "\n\n");
@@ -67,7 +67,7 @@ import static org.junit.jupiter.api.Assertions.*;
             "10,Write Journal,Journal about my experiences and reflections",
             "175,Movie Night,Watch a favorite movie with popcorn"})
     @ParameterizedTest
-    @DisplayName("Test Exceptions for Null and Length")
+    @DisplayName("Test Exceptions for Null and Length all Parameters:")
     void testAddTaskAndGetTaskById(String taskId,
                                    String taskName,
                                    String taskDescription) {
@@ -75,7 +75,6 @@ import static org.junit.jupiter.api.Assertions.*;
             taskService.addTask(taskId,
                     taskName,
                     taskDescription);
-
 
             assertNotNull(taskService.getTaskById(taskId), "The added Task Should not be Null");
             taskService.displayValues(taskId);
@@ -93,24 +92,35 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     @Order(2)
     @DisplayName("Prints Parameterized Test Map Values:")
-    void testPrintAllTasks() {
+    void testPrintAllMapTasksFromParam() {
         assertDoesNotThrow(() -> {
             taskService.printAllTasks();
         });
     }
 
+    /**
+     * Retrieves Description from map, by ID.
+     */
     @Test
-    @DisplayName("Retrieves the name of a task, by id, from the map.")
-    void getTaskDescription() {
+    @Order(3)
+    @DisplayName("Retrieves the Description of a task, by id, from the map:")
+    void getTaskDescriptionFromMapById() {
         String taskId = "100";
-        taskService.addTask("100", "Workout", "Pump some Iron like I'm Arnold in 1978");
-        assertEquals(taskService.getTaskDescription(taskId), "Pump some Iron like I'm Arnold in 1978");
+        String taskName = "Workout";
+        String taskDescription = "Pump some Iron like I'm Arnold in 1978";
+
+        taskService.addTask(taskId, taskName, taskDescription);
+        assertEquals(taskDescription, taskService.getTaskDescription(taskId));
         System.out.println(taskService.getTaskDescription(taskId));
     }
 
+    /**
+     * Deletes task from map, succeeds when ID exists, fails when it does not.
+     */
     @Test
-    @DisplayName("Test Deletion, exists and null.")
-    void testDeleteTask() {
+    @Order(4)
+    @DisplayName("Test Deletion if exists, Fails if null:")
+    void testDeleteTaskFromMapByIDPassFail() {
         String taskId = "175";
         assertDoesNotThrow(() -> {
             taskService.deleteTask(taskId);
@@ -120,49 +130,82 @@ import static org.junit.jupiter.api.Assertions.*;
         NullPointerException thrown = assertThrows(NullPointerException.class, () -> {
             taskService.deleteTask(taskId);
         }, "NullPointerException was expected");
+
         assertEquals("Task Id: " + taskId + " does not exist", thrown.getMessage());
         System.out.println(thrown.getMessage());
     }
 
     /**
-     * Tests retrieval of Task Name of current Task
+     * Tests Map retrieval of Task Name of Task byId
      */
     @Test
-    @DisplayName("Retrieves the current Task Name from the map")
-    void getTaskName() {
+    @Order(5)
+    @DisplayName("Retrieves Task Name from the map, by ID:")
+    void getTaskNameFromMapByID() {
         String taskId = "399";
 
         taskService.addTask(taskId,
-                "Lennry",
-                "333 Happy Place");
-        assertEquals(taskService.getTaskName(taskId), "Lennry");
+                "Wash the Car",
+                "Looks like someone went muddin' in my car");
+        assertEquals(taskService.getTaskName(taskId), "Wash the Car");
         System.out.println(taskService.getTaskName(taskId));
     }
 
+    /**
+     * Steps through creating a task and updating the Task Name, and Task Description individually.
+     */
     @Test
-    @DisplayName("Update TaskName and Update Task Description")
-    void testUpdateTask() {
+    @Order(6)
+    @DisplayName("Update TaskName and Update Task Description:")
+    void testUpdateTaskNameDescriptionFromMap() {
         String taskId = "53354";
-        taskService.addTask(taskId, "9876543210", "456 Second St");
-        assertNotNull(taskService.getTaskById(taskId));
 
-        assertEquals("9876543210", taskService.getTaskName(taskId));
-        assertEquals("456 Second St", taskService.getTaskDescription(taskId));
-        taskService.getTaskById(taskId).displayValues();
-        System.out.println("\n");
+        // Found out variables must be final or reference objects for use with assertAll, which I was using for grouping and readability.
+        var reference = new Object() {
+            String taskName = "Finish CS-320 Paper";
+            String taskDescription = "So Many Code Snippets";
+        };
 
-        taskService.updateTaskName(taskService.getTaskById(taskId), "UPDATED");
-        assertNotNull(taskService.getTaskById(taskId));
-        assertEquals("UPDATED", taskService.getTaskName(taskId));
-        assertEquals("456 Second St", taskService.getTaskDescription(taskId));
-        taskService.getTaskById(taskId).displayValues();
-        System.out.println("\n");
+        taskService.addTask(taskId, reference.taskName, reference.taskDescription);
+        assertAll(
+                () -> assertNotNull(taskService.getTaskById(taskId)),
+                () -> assertEquals(reference.taskName, taskService.getTaskName(taskId)),
+                () -> assertEquals(reference.taskDescription, taskService.getTaskDescription(taskId))
+        );
+            taskService.getTaskById(taskId).displayValues();
+            System.out.println("\n");
 
-        taskService.updateTaskDescription(taskService.getTaskById(taskId), "UPDATED");
-        assertNotNull(taskService.getTaskById(taskId));
-        assertEquals("UPDATED", taskService.getTaskName(taskId));
-        assertEquals("UPDATED", taskService.getTaskDescription(taskId));
-        taskService.getTaskById(taskId).displayValues();
-        System.out.println("\n");
+        reference.taskName = "UPDATED";
+        taskService.updateTaskName(taskId, reference.taskName);
+        assertAll(
+                () -> assertNotNull(taskService.getTaskById(taskId)),
+                () -> assertEquals(reference.taskName, taskService.getTaskName(taskId)),
+                () -> assertEquals(reference.taskDescription, taskService.getTaskDescription(taskId))
+        );
+            taskService.getTaskById(taskId).displayValues();
+            System.out.println("\n");
+
+        reference.taskDescription = "UPDATED";
+        taskService.updateTaskDescription(taskId, reference.taskDescription);
+        assertAll(
+                () -> assertNotNull(taskService.getTaskById(taskId)),
+                () -> assertEquals(reference.taskName, taskService.getTaskName(taskId)),
+                () -> assertEquals(reference.taskDescription, taskService.getTaskDescription(taskId))
+        );
+            taskService.getTaskById(taskId).displayValues();
+            System.out.println("\n");
     }
+
+    /**
+     * Prints all remaining Map Entries
+     */
+    @Test
+    @Order(7)
+    @DisplayName("Prints the final Test Map Values:")
+    void testPrintAllMapTasksLast() {
+        assertDoesNotThrow(() -> {
+            taskService.printAllTasks();
+        });
+    }
+
 }
