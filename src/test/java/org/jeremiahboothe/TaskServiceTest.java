@@ -6,9 +6,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class TaskServiceTest {
+    class TaskServiceTest {
     private static TaskService taskService;
-    private TestInfo testInfo;
 
     /**
      * Initializes HashMap and TaskService Singleton for testing.
@@ -18,57 +17,55 @@ class TaskServiceTest {
         taskService = TaskService.getInstance();
     }
 
-
+    /**
+     * BeforeEach test formatting, to make it a little bit more enjoyable to read!
+     * @param testInfo - to pull the display name off each test to display.
+     */
     @BeforeEach
     void printSpace(TestInfo testInfo) {
-        this.testInfo = testInfo;
-        System.out.println(testInfo.getDisplayName());
-        System.out.println("=========================================================\n");
+        String displayName = testInfo.getDisplayName();
+        int totalLength = 80; // Adjust the total length as needed
+        int paddingLength = (totalLength - displayName.length() - 2) / 2;
+        int extraPadding = (totalLength - displayName.length() - 2) % 2;
 
+        String padding = "*".repeat(paddingLength);
+        String padding2 = "=".repeat(totalLength);
+        String extraPaddingStr = (extraPadding == 1) ? "*": "";
+
+        System.out.println(padding2);
+        System.out.printf("%s %s %s%s\n\n", padding, displayName, padding, extraPaddingStr);
     }
 
-
-
-
-    /*========================= Testing for Correct Input =========================*/
-
-
-
-
-
-
-
-    /*========================= Testing for Exceptions =========================*/
-
-
-
-
-
-
-
-
-
-    /*========================= Testing Hashmap Additions - Exceptions, and Entries =========================*/
-
+    /**
+     * BeforeEach test formatting, to make it a little bit more enjoyable to read!
+     */
+    @AfterEach
+    void printAfterSpace() {
+        int totalLength = 80; // Adjust the total length as needed
+        String padding2 = "=".repeat(totalLength);
+        System.out.println(padding2 + "\n\n");
+    }
     /**
      * Parameterized test to run null check and length check, ensuring values that are too long or null are rejected.
-     * @param taskId CSV Task Id's
-     * @param taskName CSV Task Names
+     *
+     * @param taskId          CSV Task Id's
+     * @param taskName        CSV Task Names
      * @param taskDescription CSV Task Descriptions
      */
     @Order(1)
     @CsvSource({
-            "Isabella,Anderson,4325555678,123 Oak St",
-            "Isabella,Anderson,4325555678,123 Oak St",
-            ",Smith,4325551234,456 Pine Ln",
-            "Sophia,,4325559275,789 Elm Blvd",
-            "Mason,Clark, ,890 Cedar Rd",
-            "Amelia,Cooper,4325558765,",
-            "EmmaGenopolis,Evans,4325553456,567 Maple Dr",
-            "Elijah,TurnerBakerson,4325556789,890 Cedar Rd",
-            "Emma,Miller,14325554321,456 Oak Ave",
-            "Olivia,Davis,4325553456,8000 Taumatawhakatangihangakoauauo tamateaturipukakapikimaungahoronuku pokaiwhenuakitanatahu",
-            "Sophia,Clark,4325559275,789 Elm Blvd"})
+            ",Grocery Shopping,Buy groceries for the week",
+            "2,,Go for a 30-minute jog in the park",
+            "3,Work Meeting,",
+            "44256456897,Read Book,Read the first chapter of a new novel",
+            "5,Cook Dinner Cook Dinner,Prepare a homemade dinner for the family",
+            "6,Pay Bills,Settle monthly utility bills and go to the poor house!",
+            "7,Call Friend,Catch up with a friend over the phone",
+            "7,Call Friend,Catch up with a friend over the phone",
+            "8,Learn Guitar,Practice playing the guitar for 20 minutes",
+            "9,Clean House,Tidy up and clean different rooms in the house",
+            "10,Write Journal,Journal about my experiences and reflections",
+            "175,Movie Night,Watch a favorite movie with popcorn"})
     @ParameterizedTest
     @DisplayName("Test Exceptions for Null and Length")
     void testAddTaskAndGetTaskById(String taskId,
@@ -80,9 +77,8 @@ class TaskServiceTest {
                     taskDescription);
 
 
-            assertNotNull(taskService.getTaskById(taskService.getCurrentTaskId()), "The added Task Should not be Null");
-            taskService.displayValues();
-
+            assertNotNull(taskService.getTaskById(taskId), "The added Task Should not be Null");
+            taskService.displayValues(taskId);
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException || e instanceof NullPointerException,
                     "Unexpected exception type: " + e.getClass().getSimpleName());
@@ -96,157 +92,77 @@ class TaskServiceTest {
      */
     @Test
     @Order(2)
-        void testPrintAllTasks() {
+    @DisplayName("Prints Parameterized Test Map Values:")
+    void testPrintAllTasks() {
         assertDoesNotThrow(() -> {
             taskService.printAllTasks();
         });
     }
 
     @Test
+    @DisplayName("Retrieves the name of a task, by id, from the map.")
     void getTaskDescription() {
-        taskService.addTask("1", "Workout", "Pump some Iron like I'm Arnold in 1978");
-        assertEquals(taskService.getTaskDescription(), "Pump some Iron like I'm Arnold in 1978");
-        System.out.println(taskService.getTaskDescription());
+        String taskId = "100";
+        taskService.addTask("100", "Workout", "Pump some Iron like I'm Arnold in 1978");
+        assertEquals(taskService.getTaskDescription(taskId), "Pump some Iron like I'm Arnold in 1978");
+        System.out.println(taskService.getTaskDescription(taskId));
     }
 
-
-
-
     @Test
+    @DisplayName("Test Deletion, exists and null.")
     void testDeleteTask() {
+        String taskId = "175";
         assertDoesNotThrow(() -> {
-            taskService.deleteTask("1");
-            assertNull(taskService.getTaskById("1"));
+            taskService.deleteTask(taskId);
+            assertNull(taskService.getTaskById(taskId));
         });
 
         NullPointerException thrown = assertThrows(NullPointerException.class, () -> {
-            taskService.deleteTask("1");
-            }, "NullPointerException was expected");
-        assertEquals("Task Id: 1 does not exist", thrown.getMessage());
+            taskService.deleteTask(taskId);
+        }, "NullPointerException was expected");
+        assertEquals("Task Id: " + taskId + " does not exist", thrown.getMessage());
         System.out.println(thrown.getMessage());
     }
-
 
     /**
      * Tests retrieval of Task Name of current Task
      */
     @Test
+    @DisplayName("Retrieves the current Task Name from the map")
     void getTaskName() {
-        taskService.addTask("399",
+        String taskId = "399";
+
+        taskService.addTask(taskId,
                 "Lennry",
                 "333 Happy Place");
-        assertEquals(taskService.getTaskName(), "Lennry");
+        assertEquals(taskService.getTaskName(taskId), "Lennry");
+        System.out.println(taskService.getTaskName(taskId));
     }
 
-    /**
-     * Tests retrieval of Id for current task
-     */
     @Test
-    void getTaskId() {
-        taskService.addTask("599","Lennry",
-                "333 Happy Place");
-        assertEquals("599", taskService.getTaskId());
-    }
-
-
-    /**
-     * Tests User Input Id's, and checks to ensure overwrites to not occur after user Input Id is created.
-     */
-    /*
-    @Test
-    void testCustomId() {
-        assertDoesNotThrow(() -> {
-            /* taskService
-                    .addTask("1000000000",
-                    "Billy",
-                    "Kurilko",
-                    "4325556789",
-                    "7523 Waterstreet");
-        });
-
-        assertDoesNotThrow(() -> {
-            taskService
-                    .addTask("JJJ*#$@$%J",
-                            "Benny",
-                            "Barton",
-                            "4325356389",
-                            "7432 Waterstreet");
-        });
-
-        IllegalArgumentException exceptionDuplicateId = assertThrows(IllegalArgumentException.class, () -> {
-            taskService
-                    .addTask("1000000000",
-                            "Billy",
-                            "Kurilko",
-                            "4325556789",
-                            "7523 Waterstreet");
-
-        });
-        assertEquals("Task Id: 1000000000 already exists!", exceptionDuplicateId.getMessage());
-
-        IllegalArgumentException exceptionDuplicateId2 = assertThrows(IllegalArgumentException.class, () -> {
-            taskService
-                    .addTask("JJJ*#$@$%J",
-                            "Billy",
-                            "Kurilko",
-                            "4325556789",
-                            "7523 Waterstreet");
-
-        });
-        assertEquals("Task Id: JJJ*#$@$%J already exists!", exceptionDuplicateId2.getMessage());
-        taskService.displayValues();
-
-    }*/
-
-    /**
-     * todo:
-     *//*
-    @Test
+    @DisplayName("Update TaskName and Update Task Description")
     void testUpdateTask() {
-        assertDoesNotThrow(() -> {
-            taskService.addTask("1000",
-                    "But",
-                    "why",
-                    "too",
-                    "high a number");
-            assertNotNull(taskService.getTaskById(taskService.getCurrentTaskId()), "The added Task Should not be Null");
+        String taskId = "53354";
+        taskService.addTask(taskId, "9876543210", "456 Second St");
+        assertNotNull(taskService.getTaskById(taskId));
 
-        });
+        assertEquals("9876543210", taskService.getTaskName(taskId));
+        assertEquals("456 Second St", taskService.getTaskDescription(taskId));
+        taskService.getTaskById(taskId).displayValues();
+        System.out.println("\n");
 
-        // Use assertThrows to check for exceptions during the task addition
-        assertThrows(IllegalArgumentException.class, () -> {
-            taskService.addTask("1000",
-                    "meh",
-                    "beh",
-                    "too",
-                    "high");
-        });
+        taskService.updateTaskName(taskService.getTaskById(taskId), "UPDATED");
+        assertNotNull(taskService.getTaskById(taskId));
+        assertEquals("UPDATED", taskService.getTaskName(taskId));
+        assertEquals("456 Second St", taskService.getTaskDescription(taskId));
+        taskService.getTaskById(taskId).displayValues();
+        System.out.println("\n");
 
-        //
-        assertDoesNotThrow(() -> {
-            taskService.updateTask("1000",
-                    "murp",
-                    "Durp",
-                    "butter",
-                    "cookies");
-        });
-    }*/
-
-    /**
-     * Tests updating task that does not exist, to make sure it's not added instead.
-     *//*
-    @Test
-    void updateTaskNonExistent() {
-    try {
-            taskService.updateTask("75",
-                    "murp",
-                    "Durp",
-                    "butter",
-                    "cookies");
-    }catch (NullPointerException e) {
-            assertTrue(true,
-                    "Unexpected exception type: " + e.getClass().getSimpleName());
-            System.out.println(e.getMessage());
-        }
-    }*/
+        taskService.updateTaskDescription(taskService.getTaskById(taskId), "UPDATED");
+        assertNotNull(taskService.getTaskById(taskId));
+        assertEquals("UPDATED", taskService.getTaskName(taskId));
+        assertEquals("UPDATED", taskService.getTaskDescription(taskId));
+        taskService.getTaskById(taskId).displayValues();
+        System.out.println("\n");
+    }
 }

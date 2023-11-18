@@ -19,6 +19,7 @@ public class Task {
             throws IllegalArgumentException,
             NullPointerException {
         nullCheck(taskId, "Task Id");
+        lengthCheckTen(taskId, "Task Id");
         setTaskName(taskName);
         setTaskDescription(taskDescription);
         this.taskId = taskId;
@@ -34,7 +35,6 @@ public class Task {
         if (genericValue == null) {
             throw new NullPointerException(errorMessage + " cannot be null!");
         }
-        lengthCheckTen(genericValue, errorMessage);
     }
 
     /**
@@ -56,9 +56,10 @@ public class Task {
      * @param taskName
      */
     void setTaskName(String taskName) {
+        nullCheck(taskName, "Task Name");
         int maxLength = 20;
-        if(taskName == null || taskName.length() > 20){
-            throw new IllegalArgumentException("Invalid Task Name, cannot be longer than 20!");
+        if(taskName.length() > maxLength){
+            throw new IllegalArgumentException("Invalid Task Name: cannot be longer than " + maxLength + "!");
         }
         this.taskName = taskName;
     }
@@ -68,14 +69,15 @@ public class Task {
      * @param taskDescription
      */
     void setTaskDescription(String taskDescription) {
+        nullCheck(taskDescription, "Task Description");
         int maxLength = 50;
-        if(taskDescription == null || taskDescription.length() > maxLength) {
-            throw new IllegalArgumentException("Invalid Task Description: cannot be longer than 50!");
+        if(taskDescription.length() > maxLength) {
+            throw new IllegalArgumentException("Invalid Task Description: cannot be longer than " + maxLength + "!");
         }
         this.taskDescription = taskDescription;
     }
-    
-    /**
+
+     /**
      * Retrieves the Task Id
      * @return this.TaskId
      */
