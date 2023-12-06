@@ -1,2 +1,2 @@
-rootProject.name = "AppointmentServiceTest"
+rootProject.name = "TaskServiceTest"
 
