@@ -18,29 +18,35 @@ public class TaskService {
 
     /**
      * Retrieves taskService to operate as a singleton.
-     * @return TaskService taskService
+     * @return TASK_SERVICE The service as a singleton.
      */
     static TaskService getInstance() {
         return TASK_SERVICE;
     }
 
     /**
-     * Adds new Task to taskMap
-     * @param taskId          er Input Id of Task
-     * @param taskName        User Input Task Name
-     * @param taskDescription User Input Task Description
+     * Adds new Task to taskMap or throws exception if Task already Exists.
+     * @param task Task to be added to the map.
      */
-    void addTask(String taskId,
-                 String taskName,
-                 String taskDescription) {
-        if (taskMap.containsKey(taskId)) {
-            throw new IllegalArgumentException("Task Id: " + taskId + " already exists!");
+    void addTask(Task task) {
+        if (taskMap.containsKey(task.getTaskId())) {
+            throw new IllegalArgumentException("Task Id: " + task.getTaskId() + " already exists!");
         }
-        Task task = new Task(
+        taskMap.put(task.getTaskId(), task);
+    }
+
+    /**
+     * Creates new task.
+     * @param taskId Id for new Task
+     * @param taskName Name of new Task
+     * @param taskDescription Description of new Task
+     * @return Task New Task
+     */
+    Task createNewTaskToAddToMap(String taskId, String taskName, String taskDescription){
+        return new Task(
                 taskId,
                 taskName,
                 taskDescription);
-        taskMap.put(taskId, task);
     }
 
     /**
@@ -48,7 +54,7 @@ public class TaskService {
      * @param taskId Task Id to delete
      * @throws NullPointerException When Id is not in the map.
      */
-    public void deleteTask(String taskId) throws NullPointerException {
+    void deleteTask(String taskId) throws NullPointerException {
         if (taskMap.containsKey(taskId)) {
             taskMap.remove(taskId);
             System.out.println("Task with Id: "
@@ -66,7 +72,7 @@ public class TaskService {
      * @param taskId Id of Task.
      * @return Task at Id taskId.
      */
-    public Task getTaskById(String taskId) {
+    Task getTaskById(String taskId) {
         return taskMap.get(taskId);
     }
 
@@ -75,8 +81,8 @@ public class TaskService {
      * @param taskId Id of Task
      * @return taskName Name of Task at taskId.
      */
-    public String getTaskName(String taskId) {
-        return taskMap.get(taskId).getTaskName();
+    String getTaskName(String taskId) {
+        return getTaskById(taskId).getTaskName();
     }
 
     /**
@@ -84,16 +90,16 @@ public class TaskService {
      * @param taskId Id of Task
      * @return taskDescripton Name of Task Description at taskId.
      */
-    public String getTaskDescription(String taskId) {
+    String getTaskDescription(String taskId) {
         return getTaskById(taskId).getTaskDescription();
     }
 
     /**
      * Updates Task Name in the map, by Id.
-     * @param taskId Task Id to update
+     * @param taskId Id of task to update
      * @param taskName Task Name to update
      */
-    public void updateTaskName(String taskId, String taskName){
+    void updateTaskName(String taskId, String taskName){
         Task task = taskMap.get(taskId);
         task.setTaskName(taskName);
     }
@@ -103,22 +109,23 @@ public class TaskService {
      * @param taskId Task Id to update
      * @param taskDescription New Task Description
      */
-    public void updateTaskDescription(String taskId, String taskDescription){
+    void updateTaskDescription(String taskId, String taskDescription){
         Task task = taskMap.get(taskId);
         task.setTaskDescription(taskDescription);
     }
 
     /**
      * Displays values of current Task
+     * @param taskId Id of task to display values from
      */
-    public void displayValues(String taskId) {
+    void displayValues(String taskId) {
         getTaskById(taskId).displayValues();
     }
 
     /**
-     * Iterates through the hashmap and prints all tasks. Could replace taskService.getAllTasks().entrySet() with taskMap.entrySet() but not doing so for now in case there is further use for getAllTasks, later on.
+     * Iterates through the hashmap and prints all tasks.
      */
-    public void printAllTasks() {
+    void printAllTasks() {
         for (HashMap.Entry<String, Task> entry : TASK_SERVICE.getAllTasks().entrySet()) {
             String taskId = entry.getKey();
             Task retrievedTask = entry.getValue();

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TaskTest {
-
     private Task task;
 
     /**
@@ -28,7 +27,7 @@ class TaskTest {
     }
 
     /**
-     * sets up initial task to check values against
+     * Sets up initial task to check values against
      */
     @BeforeEach
     void setUpTestCaseTask() {
@@ -81,7 +80,7 @@ class TaskTest {
     }
 
     /**
-     * Null Failure Check on the Task Constructor
+     * Null Failure Check on the Task Constructor.  Checks each parameter.
      */
     @Test
     @Order(4)
@@ -108,7 +107,7 @@ class TaskTest {
     }
 
     /**
-     * Length Failure Checks on constructor
+     * Length Failure Checks on Constructor. Checks each parameter.
      */
     @Test
     @Order(5)
@@ -118,19 +117,19 @@ class TaskTest {
         IllegalArgumentException idLong = assertThrows(IllegalArgumentException.class, () -> {
             new Task("12345678901", "aseriopiyiokjhgpiuio", "dfasdfasdfasdfasdfaasdfasdfasdfasdfasdfasdfasdfasd");
         }, "Illegal Argument was expected");
-        assertEquals("Invalid Task Id: cannot be longer than 10!", idLong.getMessage());
+        assertEquals("Task Id cannot be longer than 10!", idLong.getMessage());
         System.out.println(idLong.getMessage());
 
         IllegalArgumentException nameLong = assertThrows(IllegalArgumentException.class, () -> {
             new Task("1234567890", "aseriopiy1iokjhgpiuio", "dfasdfasdfasdfasdfaasdfasdfasdfasdfasdfasdfasdfasd");
         }, "Illegal Argument was expected");
-        assertEquals("Invalid Task Name: cannot be longer than 20!", nameLong.getMessage());
+        assertEquals("Task Name cannot be longer than 20!", nameLong.getMessage());
         System.out.println(nameLong.getMessage());
 
         IllegalArgumentException descriptionLong = assertThrows(IllegalArgumentException.class, () -> {
             new Task("1234567890", "aseriopiyiokjhgpiuio", "dfasdfasdfasdfa1sdfaasdfasdfasdfasdfasdfasdfasdfasd");
         }, "Illegal Argument was expected");
-        assertEquals("Invalid Task Description: cannot be longer than 50!", descriptionLong.getMessage());
+        assertEquals("Task Description cannot be longer than 50!", descriptionLong.getMessage());
         System.out.println(descriptionLong.getMessage());
     }
 
@@ -161,10 +160,8 @@ class TaskTest {
         System.out.println("\n");
     }
 
-    /*========================= Testing for Exceptions =========================*/
-
     /**
-     * Id should be 10 or less.
+     * Id should be 10 or less and not null.
      */
     @Test
     @Order(7)
@@ -174,7 +171,7 @@ class TaskTest {
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             new Task("12345678901", "aseriopiyiokjhgpiuio", "dfasdfasdfasdfasdfaasdfasdfasdfasdfasdfasdfasdfasd");
         }, "Illegal Argument was expected");
-        assertEquals("Invalid Task Id: cannot be longer than 10!", thrown.getMessage());
+        assertEquals("Task Id cannot be longer than 10!", thrown.getMessage());
         System.out.println(thrown.getMessage());
 
         NullPointerException thrownI = assertThrows(NullPointerException.class, () -> {
@@ -194,7 +191,7 @@ class TaskTest {
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             new Task("1234567890", "aseriopiyiokjhgfpiuio", "dfasdfasdafasdfasdfasdfasdfasdfasdfasdfasdfasdfasd");
         }, "IllegalArgumentException was expected");
-        assertEquals("Invalid Task Name: cannot be longer than 20!", thrown.getMessage());
+        assertEquals("Task Name cannot be longer than 20!", thrown.getMessage());
         System.out.println(thrown.getMessage());
     }
 
@@ -208,7 +205,7 @@ class TaskTest {
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
             new Task("1234567890", "aseriopiyiokjhgfpiu3", "dfasdfasdfasdfasdfaseedfasdfasdfasdfasdfasdfasdfasd");
         }, "Illegal Argument was expected");
-        assertEquals("Invalid Task Description: cannot be longer than 50!", thrown.getMessage());
+        assertEquals("Task Description cannot be longer than 50!", thrown.getMessage());
         System.out.println(thrown.getMessage());
     }
 }

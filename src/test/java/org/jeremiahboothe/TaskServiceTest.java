@@ -72,9 +72,12 @@ class TaskServiceTest {
                                    String taskName,
                                    String taskDescription) {
         try {
-            taskService.addTask(taskId,
+            Task task = taskService.createNewTaskToAddToMap(
+                    taskId,
                     taskName,
                     taskDescription);
+
+            taskService.addTask(task);
 
             assertNotNull(taskService.getTaskById(taskId), "The added Task Should not be Null");
             taskService.displayValues(taskId);
@@ -83,7 +86,6 @@ class TaskServiceTest {
                     "Unexpected exception type: " + e.getClass().getSimpleName());
             System.out.println(e.getMessage());
         }
-
     }
 
     /**
@@ -109,7 +111,8 @@ class TaskServiceTest {
         String taskName = "Workout";
         String taskDescription = "Pump some Iron like I'm Arnold in 1978";
 
-        taskService.addTask(taskId, taskName, taskDescription);
+        Task task = taskService.createNewTaskToAddToMap(taskId, taskName, taskDescription);
+        taskService.addTask(task);
         assertEquals(taskDescription, taskService.getTaskDescription(taskId));
         System.out.println(taskService.getTaskDescription(taskId));
     }
@@ -136,7 +139,7 @@ class TaskServiceTest {
     }
 
     /**
-     * Tests Map retrieval of Task Name of Task byId
+     * Tests Map retrieval of Task Name of Task by Id
      */
     @Test
     @Order(5)
@@ -144,9 +147,11 @@ class TaskServiceTest {
     void getTaskNameFromMapByID() {
         String taskId = "399";
 
-        taskService.addTask(taskId,
+        Task task = taskService.createNewTaskToAddToMap(
+                taskId,
                 "Wash the Car",
                 "Looks like someone went muddin' in my car");
+        taskService.addTask(task);
         assertEquals(taskService.getTaskName(taskId), "Wash the Car");
         System.out.println(taskService.getTaskName(taskId));
     }
@@ -166,7 +171,9 @@ class TaskServiceTest {
             String taskDescription = "So Many Code Snippets";
         };
 
-        taskService.addTask(taskId, reference.taskName, reference.taskDescription);
+        Task task = taskService.createNewTaskToAddToMap(taskId, reference.taskName, reference.taskDescription);
+
+        taskService.addTask(task);
         assertAll(
                 () -> assertNotNull(taskService.getTaskById(taskId)),
                 () -> assertEquals(reference.taskName, taskService.getTaskName(taskId)),
@@ -207,5 +214,4 @@ class TaskServiceTest {
             taskService.printAllTasks();
         });
     }
-
 }

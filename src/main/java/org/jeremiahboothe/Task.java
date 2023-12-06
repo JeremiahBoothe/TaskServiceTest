@@ -4,10 +4,39 @@ public class Task {
     private final String taskId;
     private String taskName;
     private String taskDescription;
+    private final int lengthCheckShort = 10;
+    private final int lengthCheckMid = 20;
+    private final int lengthCheckLong = 50;
+
+    /**
+     * Generic type nullCheck to universally check string values and pass NullPointerExceptions back up the chain if one is thrown.
+     * @param genericValue The generic typed value to check for null.
+     * @param errorMessage The error message for tracing back to the origin.
+     * @param <T> Generic Type.
+     */
+    private <T> void nullCheck(T genericValue, String errorMessage) {
+        if (genericValue == null) {
+            throw new NullPointerException(errorMessage + " cannot be null!");
+        }
+    }
+
+    /**
+     * Generic type length check, made it more universal, now it receives an integer value of allowedLength, to be more flexible and redefined in the final lengths at the top or by each setter.
+     * @param genericValue The generic typed value to check for length greater than 10 or 30.
+     * @param errorMessage The error message for tracing back to the origin.
+     * @param allowedLength The allowed maximum not to be exceeded by each setter.
+     * @param <T> Generic Type.
+     */
+    private <T> void lengthCheck(T genericValue, String errorMessage, int allowedLength) {
+        int length = String.valueOf(genericValue).length();
+        if (length > allowedLength) {
+            throw new IllegalArgumentException(errorMessage + " cannot be longer than " + allowedLength + "!");
+        }
+    }
 
     /**
      * Constructor for new Task Creation. Constructor is designed to prevent object instantiation upon failed null check or failed length check. Passes errors up the chain to be captured at test level.
-     * @param taskId Generated or UserInputId
+     * @param taskId User Input ID
      * @param taskName Task Name
      * @param taskDescription Task Name
      * @throws NullPointerException throws NullPointerExceptions up the chain to be captured at test level
@@ -18,49 +47,26 @@ public class Task {
          String taskDescription)
             throws IllegalArgumentException,
             NullPointerException {
+
         nullCheck(taskId, "Task Id");
-        lengthCheckTen(taskId, "Task Id");
+        lengthCheck(taskId, "Task Id", lengthCheckShort);
+
         setTaskName(taskName);
         setTaskDescription(taskDescription);
+
         this.taskId = taskId;
     }
     
-    /**
-     * Generic type nullCheck to universally check string values and pass NullPointerExceptions back up the chain if one is thrown.
-     * @param genericValue The generic typed value to check for null.
-     * @param errorMessage The error message for tracing back to the origin.
-     * @param <T> Generic Type.
-     */
-     private <T> void nullCheck(T genericValue, String errorMessage) {
-        if (genericValue == null) {
-            throw new NullPointerException(errorMessage + " cannot be null!");
-        }
-    }
-
-    /**
-     * Generic type length check to not exceed 10 and pass IllegalArgumentExceptions back up the chain if the value is greater than 10.
-     * @param genericValue The generic typed value to check for length greater than 10.
-     * @param errorMessage The error message for tracing back to the origin.
-     * @param <T> Generic Type.
-     */
-    private <T> void lengthCheckTen(T genericValue, String errorMessage) {
-        int length = String.valueOf(genericValue).length();
-        int maxLength = 10;
-            if (length > maxLength) {
-                throw new IllegalArgumentException("Invalid " + errorMessage + ": cannot be longer than " + maxLength + "!");
-            }
-    }
-
     /**
      * Setter for taskName
      * @param taskName Name of Task
      */
     void setTaskName(String taskName) {
-        nullCheck(taskName, "Task Name");
-        int maxLength = 20;
-        if(taskName.length() > maxLength){
-            throw new IllegalArgumentException("Invalid Task Name: cannot be longer than " + maxLength + "!");
-        }
+        String errorIdentifier = "Task Name";
+
+        nullCheck(taskName, errorIdentifier);
+        lengthCheck(taskName, errorIdentifier, lengthCheckMid);
+
         this.taskName = taskName;
     }
 
@@ -69,11 +75,10 @@ public class Task {
      * @param taskDescription Description of Task
      */
     void setTaskDescription(String taskDescription) {
+        String errorIdentifier = "Task Description";
+
         nullCheck(taskDescription, "Task Description");
-        int maxLength = 50;
-        if(taskDescription.length() > maxLength) {
-            throw new IllegalArgumentException("Invalid Task Description: cannot be longer than " + maxLength + "!");
-        }
+        lengthCheck(taskDescription, errorIdentifier, lengthCheckLong);
         this.taskDescription = taskDescription;
     }
 
@@ -98,7 +103,7 @@ public class Task {
      * @return taskName
      */
     String getTaskName(){
-        return taskName;
+        return this.taskName;
     }
 
     /**
